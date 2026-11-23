@@ -1,6 +1,135 @@
 {
   "properties": {
+    "parameters": {
+      "start_month": {
+        "type": "string",
+        "defaultValue": "2024-01"
+      }
+    },
     "activities": [
+      {
+        "type": "TridentNotebook",
+        "typeProperties": {
+          "notebookId": "fea386de-5bb4-443b-b7bf-4595c48d8420",
+          "workspaceId": "00000000-0000-0000-0000-000000000000",
+          "parameters": {
+            "start_month": {
+              "value": {
+                "value": "@pipeline().parameters.start_month",
+                "type": "Expression"
+              },
+              "type": "string"
+            }
+          }
+        },
+        "policy": {
+          "timeout": "0.01:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Get months",
+        "dependsOn": []
+      },
+      {
+        "type": "ForEach",
+        "typeProperties": {
+          "items": {
+            "value": "@json(activity('Get months').output.result.exitValue)",
+            "type": "Expression"
+          },
+          "isSequential": false,
+          "batchCount": 4,
+          "activities": [
+            {
+              "type": "Copy",
+              "typeProperties": {
+                "source": {
+                  "type": "BinarySource",
+                  "formatSettings": {
+                    "type": "BinaryReadSettings"
+                  },
+                  "storeSettings": {
+                    "type": "HttpReadSettings",
+                    "requestMethod": "GET"
+                  },
+                  "datasetSettings": {
+                    "type": "Binary",
+                    "typeProperties": {
+                      "location": {
+                        "type": "HttpServerLocation",
+                        "relativeUrl": {
+                          "value": "@concat('trip-data/yellow_tripdata_', item(), '.parquet')",
+                          "type": "Expression"
+                        }
+                      }
+                    },
+                    "externalReferences": {
+                      "connection": "4b304806-5f70-4b3f-bb14-b47e879433cc"
+                    },
+                    "annotations": []
+                  }
+                },
+                "sink": {
+                  "type": "BinarySink",
+                  "storeSettings": {
+                    "type": "LakehouseWriteSettings"
+                  },
+                  "datasetSettings": {
+                    "type": "Binary",
+                    "typeProperties": {
+                      "location": {
+                        "type": "LakehouseLocation",
+                        "folderPath": "taxi",
+                        "fileName": {
+                          "value": "@concat('yellow_tripdata_', item(), '.parquet')",
+                          "type": "Expression"
+                        }
+                      }
+                    },
+                    "connectionSettings": {
+                      "name": "lh_bronze",
+                      "properties": {
+                        "type": "Lakehouse",
+                        "typeProperties": {
+                          "artifactId": "56ee5e9d-de82-46ba-9c2a-190af8a6d796",
+                          "workspaceId": "00000000-0000-0000-0000-000000000000",
+                          "rootFolder": "Files"
+                        },
+                        "externalReferences": {
+                          "connection": "f59a53ba-c103-42e5-bc1f-854d3d25e387"
+                        },
+                        "annotations": []
+                      }
+                    },
+                    "annotations": []
+                  }
+                },
+                "enableStaging": false
+              },
+              "policy": {
+                "timeout": "0.02:00:00",
+                "retry": 2,
+                "retryIntervalInSeconds": 60,
+                "secureInput": false,
+                "secureOutput": false
+              },
+              "name": "Copy taxi month",
+              "dependsOn": []
+            }
+          ]
+        },
+        "name": "For each month",
+        "dependsOn": [
+          {
+            "activity": "Get months",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      },
       {
         "type": "Copy",
         "typeProperties": {
@@ -18,7 +147,7 @@
               "typeProperties": {
                 "location": {
                   "type": "HttpServerLocation",
-                  "relativeUrl": "trip-data/yellow_tripdata_2024-01.parquet"
+                  "relativeUrl": "misc/taxi_zone_lookup.csv"
                 }
               },
               "externalReferences": {
@@ -37,7 +166,8 @@
               "typeProperties": {
                 "location": {
                   "type": "LakehouseLocation",
-                  "folderPath": "taxi"
+                  "folderPath": "taxi",
+                  "fileName": "taxi_zone_lookup.csv"
                 }
               },
               "connectionSettings": {
@@ -61,13 +191,13 @@
           "enableStaging": false
         },
         "policy": {
-          "timeout": "0.12:00:00",
-          "retry": 0,
-          "retryIntervalInSeconds": 30,
+          "timeout": "0.01:00:00",
+          "retry": 2,
+          "retryIntervalInSeconds": 60,
           "secureInput": false,
           "secureOutput": false
         },
-        "name": "Copy data1",
+        "name": "Copy zone lookup",
         "dependsOn": []
       }
     ]

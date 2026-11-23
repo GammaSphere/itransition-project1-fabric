@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Notebook",
+    "displayName": "nb_openaq_raw",
+    "description": "Calls the OpenAQ API with the secret key and lands the raw JSON responses in bronze"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "5008be5d-40ef-45c8-8c57-68d23bd8d771"
+  }
+}

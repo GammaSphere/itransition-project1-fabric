@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Notebook",
+    "displayName": "nb_silver_economy",
+    "description": "Bronze to silver: daily USD/EUR rate and yearly GDP"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "b9a12c66-0510-496b-a57c-8c4478958791"
+  }
+}

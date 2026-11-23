@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Notebook",
+    "displayName": "nb_silver_air_quality",
+    "description": "Bronze to silver: daily air quality per station and pollutant"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "a90002a8-10a8-4a6a-bf14-8b9c51517e47"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Notebook",
+    "displayName": "nb_gold_load",
+    "description": "Silver to gold: loads the star schema in the warehouse"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "e366cca1-546e-4f46-8bbd-cc7c823a4078"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Notebook",
+    "displayName": "nb_dashboards",
+    "description": "Mobility, air quality, correlation and economy dashboards"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "ffa1422a-ce5d-43fa-9486-6ab6d33351a7"
+  }
+}

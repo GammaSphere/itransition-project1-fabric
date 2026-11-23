@@ -1,11 +1,47 @@
 {
   "properties": {
+    "parameters": {
+      "start_month": {
+        "type": "string",
+        "defaultValue": "2024-01"
+      }
+    },
     "activities": [
+      {
+        "type": "ExecutePipeline",
+        "typeProperties": {
+          "pipeline": {
+            "referenceName": "fa835337-284a-8702-4b4a-03580e5e9917",
+            "type": "PipelineReference"
+          },
+          "parameters": {
+            "start_month": {
+              "value": "@pipeline().parameters.start_month",
+              "type": "Expression"
+            }
+          },
+          "waitOnCompletion": true
+        },
+        "policy": {
+          "secureInput": false
+        },
+        "name": "Ingest taxi",
+        "dependsOn": []
+      },
       {
         "type": "TridentNotebook",
         "typeProperties": {
-          "notebookId": "fea386de-5bb4-443b-b7bf-4595c48d8420",
-          "workspaceId": "00000000-0000-0000-0000-000000000000"
+          "notebookId": "5008be5d-40ef-45c8-8c57-68d23bd8d771",
+          "workspaceId": "00000000-0000-0000-0000-000000000000",
+          "parameters": {
+            "start_month": {
+              "value": {
+                "value": "@pipeline().parameters.start_month",
+                "type": "Expression"
+              },
+              "type": "string"
+            }
+          }
         },
         "policy": {
           "timeout": "0.12:00:00",
@@ -14,8 +50,41 @@
           "secureInput": false,
           "secureOutput": false
         },
-        "name": "Get months",
-        "dependsOn": []
+        "name": "Land OpenAQ raw",
+        "dependsOn": [
+          {
+            "activity": "Ingest taxi",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "RefreshDataflow",
+        "typeProperties": {
+          "dataflowId": "7c273b9c-6093-400f-9583-4044ef8c6ac3",
+          "workspaceId": "00000000-0000-0000-0000-000000000000",
+          "notifyOption": "NoNotification",
+          "dataflowType": "DataflowFabric",
+          "executeMashupQueriesOnly": true
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Refresh df_openaq",
+        "dependsOn": [
+          {
+            "activity": "Land OpenAQ raw",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
       },
       {
         "type": "RefreshDataflow",
@@ -34,7 +103,144 @@
           "secureOutput": false
         },
         "name": "Refresh df_ecb_fx",
-        "dependsOn": []
+        "dependsOn": [
+          {
+            "activity": "Land OpenAQ raw",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "RefreshDataflow",
+        "typeProperties": {
+          "dataflowId": "abda43da-d136-439f-9e9c-5867c5fb21f5",
+          "workspaceId": "00000000-0000-0000-0000-000000000000",
+          "notifyOption": "NoNotification",
+          "dataflowType": "DataflowFabric",
+          "executeMashupQueriesOnly": true
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Refresh df_worldbank_gdp",
+        "dependsOn": [
+          {
+            "activity": "Land OpenAQ raw",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "TridentNotebook",
+        "typeProperties": {
+          "notebookId": "b8c37c05-d2b0-4fda-8388-2ca4f54cb26e",
+          "workspaceId": "00000000-0000-0000-0000-000000000000"
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Silver taxi",
+        "dependsOn": [
+          {
+            "activity": "Refresh df_openaq",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          },
+          {
+            "activity": "Refresh df_ecb_fx",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          },
+          {
+            "activity": "Refresh df_worldbank_gdp",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "TridentNotebook",
+        "typeProperties": {
+          "notebookId": "a90002a8-10a8-4a6a-bf14-8b9c51517e47",
+          "workspaceId": "00000000-0000-0000-0000-000000000000"
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Silver air quality",
+        "dependsOn": [
+          {
+            "activity": "Silver taxi",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "TridentNotebook",
+        "typeProperties": {
+          "notebookId": "b9a12c66-0510-496b-a57c-8c4478958791",
+          "workspaceId": "00000000-0000-0000-0000-000000000000"
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Silver economy",
+        "dependsOn": [
+          {
+            "activity": "Silver air quality",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "TridentNotebook",
+        "typeProperties": {
+          "notebookId": "e366cca1-546e-4f46-8bbd-cc7c823a4078",
+          "workspaceId": "00000000-0000-0000-0000-000000000000"
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Gold load",
+        "dependsOn": [
+          {
+            "activity": "Silver economy",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
       }
     ]
   }

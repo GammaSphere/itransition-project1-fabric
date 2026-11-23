@@ -2,9 +2,13 @@
 section Section1;
 [DataDestinations = {[Definition = [Kind = "Reference", QueryName = "ecb_fx_raw_DataDestination", IsNewTarget = true], Settings = [Kind = "Automatic", TypeSettings = [Kind = "Table"]]]}]
 shared ecb_fx_raw = let
-    Source = #table(type table [TIME_PERIOD = text, OBS_VALUE = text], {{"2024-01-02", "1.0956"}})
+    // ECB daily reference rate: US dollars per 1 euro, business days only.
+    Source = Csv.Document(Web.Contents("https://data-api.ecb.europa.eu/service/data/EXR/D.USD.EUR.SP00.A?format=csvdata"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+    Selected = Table.SelectColumns(Promoted, {"TIME_PERIOD", "OBS_VALUE"}),
+    Typed = Table.TransformColumnTypes(Selected, {{"TIME_PERIOD", type text}, {"OBS_VALUE", type text}})
 in
-    Source;
+    Typed;
 shared ecb_fx_raw_DataDestination = let
   Pattern = Lakehouse.Contents([HierarchicalNavigation = true, EnableVorder = true, OutputMetadataRefresh = true, CreateNavigationProperties = false, EnableFolding = false]),
   Navigation_1 = Pattern{[workspaceId = "079579b3-9bd5-4e12-99c0-82567fe6f719"]}[Data],
