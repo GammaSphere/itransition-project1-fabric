@@ -24,3 +24,18 @@ print(notebookutils.fs.ls(f"{bronze}/Files"))
 # META   "language": "python",
 # META   "language_group": "synapse_pyspark"
 # META }
+
+# MARKDOWN ********************
+
+# ## Taxi months
+
+# PARAMETERS CELL ********************
+
+start_month = "2019-01"
+
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
