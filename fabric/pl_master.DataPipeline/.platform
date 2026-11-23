@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "DataPipeline",
+    "displayName": "pl_master",
+    "description": "Orchestrates bronze ingestion, silver transformation and gold load"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "76fcb2d5-e7a8-4c1d-9c1c-7231b1e318fa"
+  }
+}

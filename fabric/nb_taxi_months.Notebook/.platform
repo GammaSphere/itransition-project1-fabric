@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Notebook",
+    "displayName": "nb_taxi_months",
+    "description": "Lists the taxi months that are published at the source and not yet landed in bronze"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "fea386de-5bb4-443b-b7bf-4595c48d8420"
+  }
+}

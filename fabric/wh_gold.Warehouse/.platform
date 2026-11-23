@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Warehouse",
+    "displayName": "wh_gold",
+    "description": "Gold layer: star schema for reporting"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "35ce5df0-9823-49de-94f9-8aeeb4f0bddb"
+  }
+}

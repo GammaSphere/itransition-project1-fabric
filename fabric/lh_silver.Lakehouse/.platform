@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Lakehouse",
+    "displayName": "lh_silver",
+    "description": "Silver layer: cleaned, conformed Delta tables"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "55c5c018-53e6-408c-a69f-b73edc2d0a03"
+  }
+}
