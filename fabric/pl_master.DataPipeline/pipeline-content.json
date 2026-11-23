@@ -2,9 +2,11 @@
   "properties": {
     "activities": [
       {
-        "name": "Get months",
         "type": "TridentNotebook",
-        "dependsOn": [],
+        "typeProperties": {
+          "notebookId": "fea386de-5bb4-443b-b7bf-4595c48d8420",
+          "workspaceId": "00000000-0000-0000-0000-000000000000"
+        },
         "policy": {
           "timeout": "0.12:00:00",
           "retry": 0,
@@ -12,10 +14,27 @@
           "secureInput": false,
           "secureOutput": false
         },
+        "name": "Get months",
+        "dependsOn": []
+      },
+      {
+        "type": "RefreshDataflow",
         "typeProperties": {
-          "notebookId": "fea386de-5bb4-443b-b7bf-4595c48d8420",
-          "workspaceId": "00000000-0000-0000-0000-000000000000"
-        }
+          "dataflowId": "697916d4-c8d7-861d-482e-ed2d33b89a98",
+          "workspaceId": "00000000-0000-0000-0000-000000000000",
+          "notifyOption": "NoNotification",
+          "dataflowType": "DataflowFabric",
+          "executeMashupQueriesOnly": true
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Refresh df_ecb_fx",
+        "dependsOn": []
       }
     ]
   }
