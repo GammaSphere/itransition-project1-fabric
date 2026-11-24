@@ -1,11 +1,5 @@
 {
   "properties": {
-    "parameters": {
-      "start_month": {
-        "type": "string",
-        "defaultValue": "2024-01"
-      }
-    },
     "activities": [
       {
         "type": "ExecutePipeline",
@@ -42,6 +36,9 @@
               "type": "string"
             }
           }
+        },
+        "externalReferences": {
+          "connection": "e558edd9-2138-4519-aebf-83082a2e2ee4"
         },
         "policy": {
           "timeout": "0.12:00:00",
@@ -144,6 +141,9 @@
           "notebookId": "b8c37c05-d2b0-4fda-8388-2ca4f54cb26e",
           "workspaceId": "00000000-0000-0000-0000-000000000000"
         },
+        "externalReferences": {
+          "connection": "e558edd9-2138-4519-aebf-83082a2e2ee4"
+        },
         "policy": {
           "timeout": "0.12:00:00",
           "retry": 0,
@@ -179,6 +179,9 @@
           "notebookId": "a90002a8-10a8-4a6a-bf14-8b9c51517e47",
           "workspaceId": "00000000-0000-0000-0000-000000000000"
         },
+        "externalReferences": {
+          "connection": "e558edd9-2138-4519-aebf-83082a2e2ee4"
+        },
         "policy": {
           "timeout": "0.12:00:00",
           "retry": 0,
@@ -201,6 +204,9 @@
         "typeProperties": {
           "notebookId": "b9a12c66-0510-496b-a57c-8c4478958791",
           "workspaceId": "00000000-0000-0000-0000-000000000000"
+        },
+        "externalReferences": {
+          "connection": "e558edd9-2138-4519-aebf-83082a2e2ee4"
         },
         "policy": {
           "timeout": "0.12:00:00",
@@ -225,6 +231,9 @@
           "notebookId": "e366cca1-546e-4f46-8bbd-cc7c823a4078",
           "workspaceId": "00000000-0000-0000-0000-000000000000"
         },
+        "externalReferences": {
+          "connection": "e558edd9-2138-4519-aebf-83082a2e2ee4"
+        },
         "policy": {
           "timeout": "0.12:00:00",
           "retry": 0,
@@ -242,6 +251,12 @@
           }
         ]
       }
-    ]
+    ],
+    "parameters": {
+      "start_month": {
+        "type": "string",
+        "defaultValue": "2024-01"
+      }
+    }
   }
 }

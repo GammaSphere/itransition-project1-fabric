@@ -1,11 +1,5 @@
 {
   "properties": {
-    "parameters": {
-      "start_month": {
-        "type": "string",
-        "defaultValue": "2024-01"
-      }
-    },
     "activities": [
       {
         "type": "TridentNotebook",
@@ -22,6 +16,9 @@
             }
           }
         },
+        "externalReferences": {
+          "connection": "e558edd9-2138-4519-aebf-83082a2e2ee4"
+        },
         "policy": {
           "timeout": "0.01:00:00",
           "retry": 0,
@@ -35,12 +32,12 @@
       {
         "type": "ForEach",
         "typeProperties": {
+          "isSequential": false,
+          "batchCount": 4,
           "items": {
             "value": "@json(activity('Get months').output.result.exitValue)",
             "type": "Expression"
           },
-          "isSequential": false,
-          "batchCount": 4,
           "activities": [
             {
               "type": "Copy",
@@ -200,6 +197,12 @@
         "name": "Copy zone lookup",
         "dependsOn": []
       }
-    ]
+    ],
+    "parameters": {
+      "start_month": {
+        "type": "string",
+        "defaultValue": "2024-01"
+      }
+    }
   }
 }
