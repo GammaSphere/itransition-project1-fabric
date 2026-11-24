@@ -70,13 +70,16 @@ flowchart LR
 ```mermaid
 flowchart LR
     A[Ingest taxi<br/>pl_ingest_taxi] --> B[Land OpenAQ raw<br/>nb_openaq_raw]
-    B --> C1[Refresh df_openaq]
-    B --> C2[Refresh df_ecb_fx]
-    B --> C3[Refresh df_worldbank_gdp]
-    C1 & C2 & C3 --> D[Silver taxi]
+    B --> W[Land weather raw<br/>nb_weather_raw]
+    W --> C1[Refresh df_openaq]
+    W --> C2[Refresh df_ecb_fx]
+    W --> C3[Refresh df_worldbank_gdp]
+    W --> C4[Refresh df_weather]
+    C1 & C2 & C3 & C4 --> D[Silver taxi]
     D --> E[Silver air quality]
     E --> F[Silver economy]
-    F --> G[Gold load]
+    F --> H[Silver weather]
+    H --> G[Gold load]
 ```
 
 Each step starts only when the previous one succeeded, so a failure stops the run and leaves the
