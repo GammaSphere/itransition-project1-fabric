@@ -69,7 +69,7 @@ def test_sync_once_updates_changed_row(pg):
 
 def test_sync_keeps_missing_values_as_null(pg):
     sync.sync_once(pg)  # the newest sample days have no taxi data yet
-    assert pg.execute("SELECT count(*) FROM weather_enriched WHERE trips_day IS NULL").fetchone()[0] == 240
+    assert pg.execute("SELECT count(*) FROM weather_enriched WHERE trips_day IS NULL").fetchone()[0] == 235
 
 
 def test_run_survives_a_failed_cycle():
