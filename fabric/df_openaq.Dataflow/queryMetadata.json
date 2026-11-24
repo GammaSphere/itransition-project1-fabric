@@ -17,25 +17,25 @@
       "queryName": "RawJson",
       "loadEnabled": false
     },
-    "openaq_locations_raw": {
-      "queryId": "9998d650-286e-480f-a481-a3fdd5f92bd6",
-      "queryName": "openaq_locations_raw",
-      "loadEnabled": false
-    },
     "openaq_daily_raw": {
       "queryId": "11351bd7-b21c-492a-a7f7-54f5d86ebfe8",
       "queryName": "openaq_daily_raw",
       "loadEnabled": false
     },
-    "openaq_locations_raw_DataDestination": {
-      "queryId": "99549cbe-e373-4a92-a1bc-3c45980723ce",
-      "queryName": "openaq_locations_raw_DataDestination",
-      "isHidden": true,
-      "loadEnabled": false
-    },
     "openaq_daily_raw_DataDestination": {
       "queryId": "1db38790-3cc6-47db-9cfb-667edaa1ab4b",
       "queryName": "openaq_daily_raw_DataDestination",
+      "isHidden": true,
+      "loadEnabled": false
+    },
+    "openaq_locations_raw": {
+      "queryId": "9998d650-286e-480f-a481-a3fdd5f92bd6",
+      "queryName": "openaq_locations_raw",
+      "loadEnabled": false
+    },
+    "openaq_locations_raw_DataDestination": {
+      "queryId": "99549cbe-e373-4a92-a1bc-3c45980723ce",
+      "queryName": "openaq_locations_raw_DataDestination",
       "isHidden": true,
       "loadEnabled": false
     }

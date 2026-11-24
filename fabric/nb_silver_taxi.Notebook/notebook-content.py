@@ -14,8 +14,7 @@
 # # Silver: NYC yellow taxi
 # Bronze Parquet files → `taxi_trips` (cleaned trips), `taxi_daily_zone` (daily aggregates per
 # pickup zone) and `taxi_zones` (zone lookup) in `lh_silver`.
-#
-# Only months that are not yet in `taxi_trips` are processed, unless `full_refresh` is set.
+# # Only months that are not yet in `taxi_trips` are processed, unless `full_refresh` is set.
 
 # PARAMETERS CELL ********************
 

@@ -1,4 +1,4 @@
-[StagingDefinition = [Kind = "FastCopy"]]
+[DefaultOutputDestinationSettings = [DestinationDefinition = [Kind = "Reference", QueryName = "DefaultDestination", IsNewTarget = true], UpdateMethod = [Kind = "Replace"], DestinationTypeSettings = [Kind = "Table"]], StagingDefinition = [Kind = "FastCopy"]]
 section Section1;
 [DataDestinations = {[Definition = [Kind = "Reference", QueryName = "worldbank_gdp_raw_DataDestination", IsNewTarget = true], Settings = [Kind = "Automatic", TypeSettings = [Kind = "Table"]]]}]
 shared worldbank_gdp_raw = let
@@ -18,3 +18,10 @@ shared worldbank_gdp_raw_DataDestination = let
   TableNavigation = Navigation_3{[Id = "worldbank_gdp_raw", ItemKind = "Table"]}?[Data]?
 in
   TableNavigation;
+shared DefaultDestination = let
+  Source = Lakehouse.Contents([CreateNavigationProperties = false, EnableFolding = false, HierarchicalNavigation = true]),
+  Navigation = Source{[workspaceId = "079579b3-9bd5-4e12-99c0-82567fe6f719"]}[Data],
+  #"Navigation 1" = Navigation{[lakehouseId = "ca3e6a30-6384-41ca-80fd-4a39238c9e5f"]}[Data],
+  #"Navigation 2" = #"Navigation 1"{[Id = "dbo", ItemKind = "Schema"]}[Data]
+in
+  #"Navigation 2";

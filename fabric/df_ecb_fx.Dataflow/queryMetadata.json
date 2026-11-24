@@ -24,6 +24,11 @@
       "path": "Lakehouse",
       "kind": "Lakehouse",
       "connectionId": "{\"ClusterId\":\"cd363dad-e77c-43e7-97ab-31e80967d6a5\",\"DatasourceId\":\"f59a53ba-c103-42e5-bc1f-854d3d25e387\"}"
+    },
+    {
+      "path": "https://data-api.ecb.europa.eu/service/data/EXR/D.USD.EUR.SP00.A",
+      "kind": "Web",
+      "connectionId": "{\"ClusterId\":\"cd363dad-e77c-43e7-97ab-31e80967d6a5\",\"DatasourceId\":\"a8f622e6-c28b-4991-bd97-86d90a3704f4\"}"
     }
   ]
 }

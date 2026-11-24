@@ -7,6 +7,12 @@
   "queryGroups": [],
   "documentLocale": "en-US",
   "queriesMetadata": {
+    "DefaultDestination": {
+      "queryId": "098168e5-bd42-4025-9b95-cbf431341ee3",
+      "queryName": "DefaultDestination",
+      "isHidden": true,
+      "loadEnabled": false
+    },
     "worldbank_gdp_raw": {
       "queryId": "b9b11434-d26b-419e-a74f-2bfb689114c8",
       "queryName": "worldbank_gdp_raw",
@@ -24,6 +30,11 @@
       "path": "Lakehouse",
       "kind": "Lakehouse",
       "connectionId": "{\"ClusterId\":\"cd363dad-e77c-43e7-97ab-31e80967d6a5\",\"DatasourceId\":\"f59a53ba-c103-42e5-bc1f-854d3d25e387\"}"
+    },
+    {
+      "path": "https://api.worldbank.org/v2/country/USA/indicator/NY.GDP.MKTP.CD",
+      "kind": "Web",
+      "connectionId": "{\"ClusterId\":\"cd363dad-e77c-43e7-97ab-31e80967d6a5\",\"DatasourceId\":\"79564bef-acee-4348-b3c8-a75f0e963583\"}"
     }
   ]
 }
