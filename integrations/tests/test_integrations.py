@@ -16,14 +16,6 @@ from integrations.weather_sync import sync  # noqa: E402
 
 # --- reader ---------------------------------------------------------------
 
-def test_read_table_sample_since():
-    everything = read_table("vw_weather_enriched", time_col="ts")
-    cutoff = everything["ts"].sort_values().iloc[2]
-    newer = read_table("vw_weather_enriched", since=cutoff, time_col="ts")
-    assert (newer["ts"] > cutoff).all()
-    assert len(newer) == len(everything) - 3
-
-
 def test_read_table_rejects_unknown_name():
     with pytest.raises(ValueError):
         read_table("DimDate; DROP TABLE x")
@@ -33,11 +25,9 @@ def test_read_table_rejects_unknown_name():
 
 @pytest.fixture
 def pg():
-    dsn = os.environ.get("PG_DSN")
-    if not dsn:
-        pytest.skip("PG_DSN not set")
-    import psycopg
-    with psycopg.connect(dsn) as conn:
+    if not os.environ.get("PGHOST"):
+        pytest.skip("PGHOST not set")
+    with sync.connect() as conn:
         conn.execute("TRUNCATE weather_enriched")
         conn.commit()
         yield conn
@@ -53,18 +43,23 @@ def test_sync_once_copies_everything_then_is_stable(pg):
     total = len(read_table("vw_weather_enriched"))
     assert sync.sync_once(pg) == total
     assert count(pg) == total
-    sync.sync_once(pg)  # re-reads the lookback window
+    assert sync.sync_once(pg) == total  # the whole view is upserted again
     assert count(pg) == total
 
 
-def test_sync_once_reads_only_the_lookback_window(pg):
+def test_sync_fills_in_late_taxi_data_for_old_rows(pg):
     sync.sync_once(pg)
-    assert sync.sync_once(pg, lookback_days=1) == 24  # hourly rows of the last day
+    late = read_table("vw_weather_enriched")
+    first_missing = late.index[late["trips_day"].isna()][0]  # an old hour, 10 days before the newest
+    late.loc[first_missing, "trips_day"] = 12345
+    with patch.object(sync, "read_table", return_value=late):
+        sync.sync_once(pg)
+    assert pg.execute("SELECT count(*) FROM weather_enriched WHERE trips_day = 12345").fetchone()[0] == 1
 
 
 def test_sync_once_updates_changed_row(pg):
     sync.sync_once(pg)
-    changed = read_table("vw_weather_enriched", time_col="ts")
+    changed = read_table("vw_weather_enriched")
     changed.loc[changed.index[-1], "pm25_day"] = 99.5
     with patch.object(sync, "read_table", return_value=changed):
         sync.sync_once(pg)
@@ -154,9 +149,24 @@ def test_render_html_contains_every_table_and_escapes():
 def make_update(chat_id):
     update = MagicMock()
     update.effective_chat.id = chat_id
-    update.message.reply_text = AsyncMock()
-    update.message.reply_document = AsyncMock()
+    update.effective_message.reply_text = AsyncMock()
+    update.effective_message.reply_document = AsyncMock()
     return update
+
+
+def test_bot_token_is_not_logged():
+    import logging
+    bot.setup_logging()
+    assert logging.getLogger("httpx").getEffectiveLevel() >= logging.WARNING
+
+
+def test_unknown_table_is_refused_before_running(monkeypatch):
+    monkeypatch.setenv("TELEGRAM_ALLOWED_CHAT_IDS", "111")
+    update, context = make_update(111), MagicMock(args=["NoSuchTable"])
+    with patch.object(bot, "run_checks") as run:
+        asyncio.run(bot.quality(update, context))
+    run.assert_not_called()
+    assert "Unknown table: NoSuchTable" in update.effective_message.reply_text.await_args.args[0]
 
 
 def test_unauthorised_chat_runs_nothing(monkeypatch):
@@ -165,15 +175,15 @@ def test_unauthorised_chat_runs_nothing(monkeypatch):
     with patch.object(bot, "run_checks") as run:
         asyncio.run(bot.quality(update, context))
     run.assert_not_called()
-    update.message.reply_text.assert_awaited_once_with("Not authorised")
+    update.effective_message.reply_text.assert_awaited_once_with("Not authorised")
 
 
 def test_authorised_chat_gets_summary_and_report(monkeypatch):
     monkeypatch.setenv("TELEGRAM_ALLOWED_CHAT_IDS", "111")
     update, context = make_update(111), MagicMock(args=["DimDate"])
     asyncio.run(bot.quality(update, context))
-    assert "all checks passed" in update.message.reply_text.await_args_list[-1].args[0]
-    assert update.message.reply_document.await_args.kwargs["filename"] == "quality_report.html"
+    assert "all checks passed" in update.effective_message.reply_text.await_args_list[-1].args[0]
+    assert update.effective_message.reply_document.await_args.kwargs["filename"] == "quality_report.html"
 
 
 def test_failure_replies_without_traceback(monkeypatch):
@@ -181,6 +191,6 @@ def test_failure_replies_without_traceback(monkeypatch):
     update, context = make_update(111), MagicMock(args=[])
     with patch.object(bot, "run_checks", side_effect=RuntimeError("secret connection string")):
         asyncio.run(bot.quality(update, context))
-    last = update.message.reply_text.await_args_list[-1].args[0]
+    last = update.effective_message.reply_text.await_args_list[-1].args[0]
     assert "could not run" in last and "secret" not in last
-    update.message.reply_document.assert_not_awaited()
+    update.effective_message.reply_document.assert_not_awaited()

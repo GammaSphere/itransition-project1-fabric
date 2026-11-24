@@ -47,7 +47,7 @@ docker compose up -d --build
 | Service | What it does |
 |---|---|
 | `timescaledb` | Time-series database with the hypertable `weather_enriched` |
-| `weather_sync` | Copies `vw_weather_enriched` into TimescaleDB every `SYNC_INTERVAL_MINUTES` |
+| `weather_sync` | Copies `vw_weather_enriched` into TimescaleDB every `SYNC_INTERVAL_MINUTES` (default 60) |
 | `grafana` | Dashboard at <http://localhost:3000> (user `admin`, password from `.env`) |
 | `dq_bot` | Telegram bot; stays off while `TELEGRAM_BOT_TOKEN` is empty |
 
@@ -73,10 +73,10 @@ docker compose up -d --build
 
 ## How the sync works
 
-Every cycle the job reads the rows newer than the latest hour already copied, **minus a lookback
-window** (`SYNC_LOOKBACK_DAYS`, default 100), and upserts them by timestamp. The lookback exists
-because enrichment arrives late: a weather hour is copied first without taxi trips, and the trip
-count for that day appears in the warehouse weeks later. Re-reading the window updates those rows.
+Every cycle the job reads the whole `vw_weather_enriched` view (about 9,000 rows per year of
+history) and upserts it by timestamp. A full upsert is used on purpose: enrichment arrives late.
+A weather hour is copied first without taxi trips, and the trip count for that day appears in the
+warehouse about two months later; re-reading everything guarantees those rows are filled in.
 
 If the warehouse or the database is unreachable, the cycle is logged as failed and the job tries
 again at the next interval.
@@ -90,7 +90,7 @@ again at the next interval.
 | Latest weather hour loaded, Hours loaded | Whether the sync is keeping up |
 | Temperature | Hourly temperature |
 | Precipitation per day | Daily rainfall |
-| Air quality and temperature | Daily PM2.5 and NO2 against temperature |
+| Air quality and temperature | Daily PM2.5 and NO2 against temperature (days are New York days) |
 | Taxi trips and precipitation | Do people take more taxis when it rains? |
 | Wind speed and humidity | Hourly wind and humidity |
 
@@ -145,9 +145,10 @@ The checks are defined with Great Expectations in `integrations/dq_bot/suites.py
 ## Tests
 
 ```bash
-docker compose run --rm -e PG_DSN=postgresql://weather:$POSTGRES_PASSWORD@timescaledb:5432/weather weather_sync python -m pytest integrations/tests -q
+docker compose run --rm weather_sync python -m pytest integrations/tests -q
 ```
 
-The tests cover the incremental sync and its lookback window, updates of changed rows, survival of
+The sync tests empty and refill the `weather_enriched` table of the running stack; the next sync
+cycle restores it. The tests cover the full upsert, late-arriving taxi data, updates of changed rows, survival of
 a failed cycle, every suite on good data and on deliberately broken data, the message length limit,
 and the chat allow-list.

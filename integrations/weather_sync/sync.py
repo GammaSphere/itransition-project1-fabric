@@ -2,7 +2,6 @@
 import logging
 import os
 import time
-from datetime import timedelta
 
 import pandas as pd
 import psycopg
@@ -22,20 +21,14 @@ UPSERT = (
 )
 
 
-def sync_once(conn, lookback_days=None):
-    """Upserts new rows and re-reads a trailing window; returns the number of rows written.
+def sync_once(conn):
+    """Upserts every row of the enriched weather view; returns the number of rows written.
 
-    Taxi and air-quality figures for a day arrive in the warehouse long after its weather
-    (taxi data is published about two months late), so already-copied hours inside the
-    lookback window are read again and updated.
+    The whole view is re-read each cycle (about 9,000 hourly rows per year). Taxi figures for a
+    day arrive in the warehouse months after its weather, so rows already copied must be updated,
+    and a full upsert cannot miss any of them.
     """
-    if lookback_days is None:
-        lookback_days = int(os.environ.get("SYNC_LOOKBACK_DAYS", "100"))
-    latest = conn.execute("SELECT max(time) FROM weather_enriched").fetchone()[0]
-    since = None
-    if latest is not None:
-        since = pd.Timestamp(latest).tz_convert("UTC").tz_localize(None) - timedelta(days=lookback_days)
-    df = read_table("vw_weather_enriched", since=since, time_col="ts")
+    df = read_table("vw_weather_enriched")
     if df.empty:
         return 0
     df = df.rename(columns={"ts": "time"})
@@ -51,12 +44,12 @@ def sync_once(conn, lookback_days=None):
 
 
 def connect():
-    return psycopg.connect(os.environ["PG_DSN"])
+    return psycopg.connect()  # host, user, password and database come from the PG* variables
 
 
 def run(connect=connect, sleep=time.sleep, cycles=None):
     """Runs sync_once every SYNC_INTERVAL_MINUTES; a failed cycle is logged and the loop goes on."""
-    interval = int(os.environ.get("SYNC_INTERVAL_MINUTES", "60")) * 60
+    interval = int(os.environ.get("SYNC_INTERVAL_MINUTES") or 60) * 60
     done = 0
     while cycles is None or done < cycles:
         try:

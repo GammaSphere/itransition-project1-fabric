@@ -289,7 +289,7 @@
           "refId": "A",
           "format": "time_series",
           "rawQuery": true,
-          "rawSql": "SELECT time_bucket('1 day', time) AS time, sum(precipitation_mm) AS \"Precipitation\" FROM weather_enriched WHERE $__timeFilter(time) GROUP BY 1 ORDER BY 1"
+          "rawSql": "SELECT time_bucket('1 day', time, 'America/New_York') AS time, sum(precipitation_mm) AS \"Precipitation\" FROM weather_enriched WHERE $__timeFilter(time) GROUP BY 1 ORDER BY 1"
         }
       ]
     },
@@ -356,7 +356,7 @@
           "refId": "A",
           "format": "time_series",
           "rawQuery": true,
-          "rawSql": "SELECT time_bucket('1 day', time) AS time, avg(pm25_day) AS \"PM2.5\", avg(no2_day) AS \"NO2\", avg(temperature_c) AS \"Temperature\" FROM weather_enriched WHERE $__timeFilter(time) GROUP BY 1 ORDER BY 1"
+          "rawSql": "SELECT time_bucket('1 day', time, 'America/New_York') AS time, avg(pm25_day) AS \"PM2.5\", avg(no2_day) AS \"NO2\", avg(temperature_c) AS \"Temperature\" FROM weather_enriched WHERE $__timeFilter(time) GROUP BY 1 ORDER BY 1"
         }
       ]
     },
@@ -423,7 +423,7 @@
           "refId": "A",
           "format": "time_series",
           "rawQuery": true,
-          "rawSql": "SELECT time_bucket('1 day', time) AS time, max(trips_day) AS \"Trips\", sum(precipitation_mm) AS \"Precipitation\" FROM weather_enriched WHERE $__timeFilter(time) GROUP BY 1 ORDER BY 1"
+          "rawSql": "SELECT time_bucket('1 day', time, 'America/New_York') AS time, max(trips_day) AS \"Trips\", sum(precipitation_mm) AS \"Precipitation\" FROM weather_enriched WHERE $__timeFilter(time) GROUP BY 1 ORDER BY 1"
         }
       ]
     },

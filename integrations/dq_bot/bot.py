@@ -19,33 +19,40 @@ def allowed_chats():
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(
+    await update.effective_message.reply_text(
         f"Your chat ID is {update.effective_chat.id}.\n"
-        "Send /quality to check every gold table, or /quality <table> for one.\n"
-        f"Tables: {', '.join(sorted(TABLES))}"
+        "Send /quality to check every gold table, or /quality <table> for one."
     )
 
 
 async def quality(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    message = update.effective_message
     if update.effective_chat.id not in allowed_chats():
-        await update.message.reply_text("Not authorised")
+        await message.reply_text("Not authorised")
         return
-    await update.message.reply_text("Running data-quality checks…")
+    unknown = [t for t in context.args or [] if t not in TABLES]
+    if unknown:
+        await message.reply_text(f"Unknown table: {', '.join(unknown)}.\nTables: {', '.join(sorted(TABLES))}")
+        return
+    await message.reply_text("Running data-quality checks…")
     try:
         results = await asyncio.to_thread(run_checks, context.args or None)
-    except ValueError as e:  # unknown table name
-        await update.message.reply_text(str(e))
-        return
-    except Exception:
+    except Exception:  # never echo driver errors to the chat: they can contain connection details
         log.exception("quality run failed")
-        await update.message.reply_text("The checks could not run. See the bot log for details.")
+        await message.reply_text("The checks could not run. See the bot log for details.")
         return
-    await update.message.reply_text(format_summary(results))
-    await update.message.reply_document(io.BytesIO(render_html(results)), filename="quality_report.html")
+    await message.reply_text(format_summary(results))
+    await message.reply_document(io.BytesIO(render_html(results)), filename="quality_report.html")
+
+
+def setup_logging():
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(levelname)s %(message)s")
+    # httpx logs every request URL at INFO, and Telegram URLs contain the bot token.
+    logging.getLogger("httpx").setLevel(logging.WARNING)
 
 
 def main():
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(levelname)s %(message)s")
+    setup_logging()
     token = os.environ.get("TELEGRAM_BOT_TOKEN")
     if not token:
         log.warning("TELEGRAM_BOT_TOKEN is not set; the bot is not started")

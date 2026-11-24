@@ -33,7 +33,10 @@ services:
     command: python -m integrations.weather_sync.sync
     env_file: .env
     environment:
-      PG_DSN: postgresql://weather:${POSTGRES_PASSWORD}@timescaledb:5432/weather
+      PGHOST: timescaledb
+      PGDATABASE: weather
+      PGUSER: weather
+      PGPASSWORD: ${POSTGRES_PASSWORD}
     restart: unless-stopped
     depends_on:
       timescaledb:
