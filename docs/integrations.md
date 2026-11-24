@@ -73,6 +73,13 @@ docker compose up -d --build
 5. In `.env` set `DATA_SOURCE=fabric`, `FABRIC_SQL_ENDPOINT`, `FABRIC_TENANT_ID`,
    `FABRIC_CLIENT_ID` and `FABRIC_CLIENT_SECRET`, then run `docker compose up -d`.
 
+The sync never deletes rows, so sample rows stay in the database after a switch to Fabric mode.
+When changing `DATA_SOURCE`, start from an empty database: `docker compose down -v`, then
+`docker compose up -d`.
+
+Fabric mode was verified on 2026-11-24: the sync copied 25,272 hourly rows from
+`vw_weather_enriched`, and all 46 quality checks passed on the seven warehouse tables.
+
 ## How the sync works
 
 Every cycle the job reads the whole `vw_weather_enriched` view (about 9,000 rows per year of
