@@ -1,0 +1,49 @@
+services:
+  timescaledb:
+    image: timescale/timescaledb:2.17.2-pg16
+    environment:
+      POSTGRES_DB: weather
+      POSTGRES_USER: weather
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    volumes:
+      - timescale-data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U weather -d weather"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  grafana:
+    image: grafana/grafana:11.3.1
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?set GRAFANA_ADMIN_PASSWORD in .env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /etc/grafana/provisioning/dashboards/weather.json
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+
+  weather_sync:
+    build: .
+    command: python -m integrations.weather_sync.sync
+    env_file: .env
+    environment:
+      PG_DSN: postgresql://weather:${POSTGRES_PASSWORD}@timescaledb:5432/weather
+    restart: unless-stopped
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+
+  dq_bot:
+    build: .
+    command: python -m integrations.dq_bot.bot
+    env_file: .env
+    restart: on-failure
+
+volumes:
+  timescale-data:

@@ -95,5 +95,8 @@ gold layer as it was after the last good run.
 | `DimGDP.yoy_growth_pct` | World Bank `value` against the previous year |
 | `vw_revenue_usd_eur.revenue_eur` | `FactTaxiDaily.total_amount` × `DimFX.eur_per_usd` of the same day |
 
+The weather flow and the external integrations that read the gold layer are shown in
+[integrations.md](integrations.md).
+
 Microsoft Purview lineage is optional in the assignment and is not enabled. The workspace
 **Lineage view** in Fabric shows the same item-level graph automatically.

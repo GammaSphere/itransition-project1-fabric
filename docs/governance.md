@@ -88,4 +88,5 @@ reloaded.
 | NYC Taxi & Limousine Commission trip records | NYC Open Data terms of use; attribution to NYC TLC |
 | OpenAQ | Data from many providers under their own open licences (mostly CC BY 4.0); attribution to OpenAQ and the original provider (for New York, US EPA AirNow) |
 | World Bank Open Data | CC BY 4.0; attribution to the World Bank |
+| Open-Meteo | CC BY 4.0; attribution to Open-Meteo; free for non-commercial use |
 | European Central Bank reference rates | Free reuse with the source acknowledged; rates are for information only |

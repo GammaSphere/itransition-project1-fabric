@@ -4,6 +4,10 @@ A unified analytics platform on Microsoft Fabric. It combines NYC taxi trips, Op
 measurements, World Bank GDP and ECB exchange rates in a medallion architecture
 (Bronze → Silver → Gold) with a Warehouse star schema and notebook dashboards.
 
+Two external integrations build on the gold layer: weather data copied into a time-series
+database with a Grafana dashboard, and a Telegram bot that runs Great Expectations data-quality
+checks on request.
+
 ## Questions it answers
 
 1. How does traffic intensity (trips per day) relate to air quality (PM2.5, NO2) in New York City?
@@ -15,8 +19,10 @@ measurements, World Bank GDP and ECB exchange rates in a medallion architecture
 
 | Folder | Content |
 |---|---|
-| [`fabric/`](fabric) | Every Fabric item, in Git-integration format: 2 lakehouses, 1 warehouse, 2 pipelines, 3 dataflows, 7 notebooks |
-| [`docs/`](docs) | Setup guide, architecture, data dictionary, lineage, governance |
+| [`fabric/`](fabric) | Every Fabric item, in Git-integration format: 2 lakehouses, 1 warehouse, 2 pipelines, 4 dataflows, 8 notebooks |
+| [`integrations/`](integrations) | Weather sync job, data-quality bot, sample data and tests (Python) |
+| [`grafana/`](grafana), [`db/`](db), `docker-compose.yml` | Grafana dashboard, TimescaleDB schema and the Docker stack |
+| [`docs/`](docs) | Setup guide, architecture, data dictionary, lineage, governance, integrations |
 
 | Layer | Item | Content |
 |---|---|---|
@@ -35,6 +41,15 @@ measurements, World Bank GDP and ECB exchange rates in a medallion architecture
 
 Full instructions: [docs/setup.md](docs/setup.md).
 
+To try the external integrations without Fabric access:
+
+```bash
+cp .env.example .env      # set the two passwords
+docker compose up -d --build
+```
+
+Then open Grafana at <http://localhost:3000>. Details: [docs/integrations.md](docs/integrations.md).
+
 ## Documentation
 
 - [Setup](docs/setup.md)
@@ -42,10 +57,12 @@ Full instructions: [docs/setup.md](docs/setup.md).
 - [Data dictionary](docs/data-dictionary.md)
 - [Data lineage](docs/lineage.md)
 - [Governance policies](docs/governance.md)
+- [External integrations: weather, Grafana, data-quality bot](docs/integrations.md)
 
 ## Data sources
 
 - [NYC TLC trip record data](https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page)
 - [OpenAQ](https://docs.openaq.org/)
 - [World Bank Open Data](https://api.worldbank.org/v2/country/USA/indicator/NY.GDP.MKTP.CD?format=json)
+- [Open-Meteo historical weather](https://open-meteo.com/en/docs/historical-weather-api)
 - [European Central Bank data portal](https://data-api.ecb.europa.eu/service/data/EXR/D.USD.EUR.SP00.A?format=csvdata)

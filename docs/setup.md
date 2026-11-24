@@ -24,11 +24,11 @@ How to get this project running in your own Microsoft Fabric workspace.
 | Item | Type | Purpose |
 |---|---|---|
 | `lh_bronze`, `lh_silver` | Lakehouse | Raw and cleaned layers |
-| `wh_gold` | Warehouse | Star schema (6 tables, 2 views) |
+| `wh_gold` | Warehouse | Star schema (7 tables, 3 views) |
 | `pl_ingest_taxi`, `pl_master` | Data pipeline | Taxi file ingestion; end-to-end orchestration |
-| `df_ecb_fx`, `df_worldbank_gdp`, `df_openaq` | Dataflow Gen2 | API data into bronze tables |
+| `df_ecb_fx`, `df_worldbank_gdp`, `df_openaq`, `df_weather` | Dataflow Gen2 | API data into bronze tables |
 | `nb_taxi_months`, `nb_openaq_raw` | Notebook | Helpers for bronze ingestion |
-| `nb_silver_taxi`, `nb_silver_air_quality`, `nb_silver_economy` | Notebook | Bronze → silver |
+| `nb_silver_taxi`, `nb_silver_air_quality`, `nb_silver_economy`, `nb_silver_weather` | Notebook | Bronze → silver |
 | `nb_gold_load` | Notebook | Silver → gold |
 | `nb_dashboards` | Notebook | The four dashboards |
 
@@ -49,7 +49,7 @@ The key stays in OneLake. It is never written to Git, to a notebook, or to a dat
 
 ### 2.2 Dataflow connections
 
-Open `df_ecb_fx` and `df_worldbank_gdp` in turn. If a banner asks for credentials, choose
+Open `df_ecb_fx`, `df_worldbank_gdp` and `df_weather` in turn. If a banner asks for credentials, choose
 **Configure connection**, keep authentication **Anonymous**, and connect. Then **Save**.
 
 `df_openaq` only reads from `lh_bronze` and needs no web connection.
@@ -68,7 +68,7 @@ workspace identity avoids this.
    create a new **Notebook** connection named `nb-workspace-identity`, authentication kind
    **Workspace identity**.
 4. Select that connection on every notebook activity: `Land OpenAQ raw`, `Silver taxi`,
-   `Silver air quality`, `Silver economy`, `Gold load` in `pl_master`, and `Get months` in
+   `Silver air quality`, `Silver economy`, `Silver weather`, `Gold load` in `pl_master`, and `Get months` in
    `pl_ingest_taxi`. Save both pipelines.
 
 If your account does not enforce MFA, the pipelines also run without this connection.
@@ -99,7 +99,7 @@ Order of execution:
 
 1. `pl_ingest_taxi` copies the missing monthly Parquet files and the zone lookup into
    `lh_bronze/Files/taxi`.
-2. `nb_openaq_raw` lands the OpenAQ API responses; the three dataflows fill the bronze tables.
+2. `nb_openaq_raw` lands the OpenAQ API responses; the four dataflows fill the bronze tables.
 3. The silver notebooks clean and conform the data into `lh_silver`.
 4. `nb_gold_load` loads the star schema in `wh_gold`.
 
@@ -112,9 +112,14 @@ Notebooks run one after another, because a small capacity cannot run several Spa
 | `lh_bronze/Files/taxi` | One Parquet file per published month since `start_month`, plus `taxi_zone_lookup.csv` |
 | `lh_bronze` tables | `ecb_fx_raw` (about 7,000 rows), `worldbank_gdp_raw` (about 65), `openaq_raw_json`, `openaq_locations_raw`, `openaq_daily_raw` |
 | `lh_silver` tables | `taxi_trips` (roughly 3 million rows per month), `taxi_daily_zone`, `taxi_zones` (265), `air_quality_daily`, `fx_daily`, `gdp_yearly` |
-| `wh_gold` | All six tables populated; `vw_city_daily` and `vw_revenue_usd_eur` return rows |
+| `wh_gold` | All seven tables populated; the three views return rows |
 
 Every notebook ends with checks (row counts, unique keys, no null keys) and fails loudly if one
 does not hold. A second run copies no taxi files and produces the same row counts.
 
 Then open `nb_dashboards` and choose **Run all**.
+
+## 4. External integrations
+
+The Grafana dashboard and the Telegram data-quality bot run in Docker, outside Fabric.
+See [integrations.md](integrations.md).
