@@ -20,6 +20,8 @@ Access is granted through Fabric workspace roles. Nobody receives more than the 
 | Viewer | Analysts and report readers | Read `wh_gold` through the SQL endpoint; no access to bronze or silver files |
 
 - Readers consume **gold only**. Bronze and silver are working layers.
+- Scheduled pipelines run their notebooks as the **workspace identity** (Contributor on the
+  workspace), not as a person, so runs do not depend on anyone's sign-in or MFA.
 - Automated readers (for example an external job) use a **service principal** with read access to
   `wh_gold` only, not a personal account.
 - Row-level security is optional in the assignment and is not configured: the data is public and

@@ -57,7 +57,7 @@ at monitoring stations, not taxi zones, so it relates to zones at borough level.
 ## Known limitations
 
 - A station close to a borough boundary can be assigned to the neighbouring borough.
-- Dataflow destinations and the HTTP connection hold IDs of the workspace they were created in
-  (see [setup.md](setup.md), section 2.3).
+- Dataflow destinations, the HTTP connection and the Notebook connection hold IDs of the workspace they were created in
+  (see [setup.md](setup.md), section 2.4).
 - Correlations between trips and pollution describe co-movement, not cause: weather and season
   affect both.

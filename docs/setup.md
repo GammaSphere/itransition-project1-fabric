@@ -54,9 +54,31 @@ Open `df_ecb_fx` and `df_worldbank_gdp` in turn. If a banner asks for credential
 
 `df_openaq` only reads from `lh_bronze` and needs no web connection.
 
-### 2.3 If you use a different workspace
+### 2.3 Workspace identity for pipeline notebooks
 
-The repository was built in one workspace, and three kinds of reference are specific to it:
+A pipeline runs its notebook activities under the identity of the person who last saved it. If
+that account requires multi-factor authentication, the notebook steps fail with
+`AADSTS50076`, because a scheduled run cannot answer an MFA prompt. Running the notebooks as the
+workspace identity avoids this.
+
+1. **Workspace settings** → **Workspace identity** → **+ Workspace identity**.
+2. **Manage access** → add the workspace identity (it has the workspace's name) with the
+   **Contributor** role.
+3. Open `pl_master`, select a notebook activity → **Settings** → **Connection** → **More** →
+   create a new **Notebook** connection named `nb-workspace-identity`, authentication kind
+   **Workspace identity**.
+4. Select that connection on every notebook activity: `Land OpenAQ raw`, `Silver taxi`,
+   `Silver air quality`, `Silver economy`, `Gold load` in `pl_master`, and `Get months` in
+   `pl_ingest_taxi`. Save both pipelines.
+
+If your account does not enforce MFA, the pipelines also run without this connection.
+
+### 2.4 If you use a different workspace
+
+The repository was built in one workspace, and four kinds of reference are specific to it:
+
+- **The Notebook connection** from section 2.3. Its ID is stored in both pipelines; select your
+  own connection on each notebook activity.
 
 - **Dataflow destinations** (`mashup.pq` of each dataflow) contain the workspace ID and the
   `lh_bronze` lakehouse ID. Open each dataflow, re-select the destination table in `lh_bronze`,
