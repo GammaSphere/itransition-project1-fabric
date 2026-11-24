@@ -27,7 +27,7 @@ How to get this project running in your own Microsoft Fabric workspace.
 | `wh_gold` | Warehouse | Star schema (7 tables, 3 views) |
 | `pl_ingest_taxi`, `pl_master` | Data pipeline | Taxi file ingestion; end-to-end orchestration |
 | `df_ecb_fx`, `df_worldbank_gdp`, `df_openaq`, `df_weather` | Dataflow Gen2 | API data into bronze tables |
-| `nb_taxi_months`, `nb_openaq_raw` | Notebook | Helpers for bronze ingestion |
+| `nb_taxi_months`, `nb_openaq_raw`, `nb_weather_raw` | Notebook | Helpers for bronze ingestion |
 | `nb_silver_taxi`, `nb_silver_air_quality`, `nb_silver_economy`, `nb_silver_weather` | Notebook | Bronze → silver |
 | `nb_gold_load` | Notebook | Silver → gold |
 | `nb_dashboards` | Notebook | The four dashboards |
@@ -49,10 +49,10 @@ The key stays in OneLake. It is never written to Git, to a notebook, or to a dat
 
 ### 2.2 Dataflow connections
 
-Open `df_ecb_fx`, `df_worldbank_gdp` and `df_weather` in turn. If a banner asks for credentials, choose
+Open `df_ecb_fx` and `df_worldbank_gdp` in turn. If a banner asks for credentials, choose
 **Configure connection**, keep authentication **Anonymous**, and connect. Then **Save**.
 
-`df_openaq` only reads from `lh_bronze` and needs no web connection.
+`df_openaq` and `df_weather` only read from `lh_bronze` and need no web connection.
 
 ### 2.3 Workspace identity for pipeline notebooks
 
@@ -67,7 +67,7 @@ workspace identity avoids this.
 3. Open `pl_master`, select a notebook activity → **Settings** → **Connection** → **More** →
    create a new **Notebook** connection named `nb-workspace-identity`, authentication kind
    **Workspace identity**.
-4. Select that connection on every notebook activity: `Land OpenAQ raw`, `Silver taxi`,
+4. Select that connection on every notebook activity: `Land OpenAQ raw`, `Land weather raw`, `Silver taxi`,
    `Silver air quality`, `Silver economy`, `Silver weather`, `Gold load` in `pl_master`, and `Get months` in
    `pl_ingest_taxi`. Save both pipelines.
 
@@ -99,7 +99,7 @@ Order of execution:
 
 1. `pl_ingest_taxi` copies the missing monthly Parquet files and the zone lookup into
    `lh_bronze/Files/taxi`.
-2. `nb_openaq_raw` lands the OpenAQ API responses; the four dataflows fill the bronze tables.
+2. `nb_openaq_raw` and `nb_weather_raw` land the API responses; the four dataflows fill the bronze tables.
 3. The silver notebooks clean and conform the data into `lh_silver`.
 4. `nb_gold_load` loads the star schema in `wh_gold`.
 

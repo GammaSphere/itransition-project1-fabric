@@ -10,7 +10,7 @@ Two integrations run outside Fabric, in Docker, and read the gold layer of the w
 
 ```mermaid
 flowchart LR
-    OM[Open-Meteo API] -- df_weather --> B[(lh_bronze)]
+    OM[Open-Meteo API] -- "nb_weather_raw<br/>then df_weather" --> B[(lh_bronze)]
     B -- nb_silver_weather --> S[(lh_silver)]
     S -- nb_gold_load --> G[(wh_gold<br/>vw_weather_enriched)]
     G -- "weather_sync<br/>every 60 min" --> T[(TimescaleDB)]
@@ -24,13 +24,15 @@ flowchart LR
 
 | Item | Role |
 |---|---|
-| `df_weather` (Dataflow Gen2) | Hourly temperature, precipitation, wind speed and humidity for New York City from the Open-Meteo archive (free, no key), into `lh_bronze.weather_hourly_raw` |
+| `nb_weather_raw` | Calls the Open-Meteo archive API (free, no key) for hourly temperature, precipitation, wind speed and humidity in New York City, and lands the raw JSON in `lh_bronze.weather_raw_json`, one row per year |
+| `df_weather` (Dataflow Gen2) | Shapes that JSON into the table `lh_bronze.weather_hourly_raw` |
 | `nb_silver_weather` | Types and deduplicates into `lh_silver.weather_hourly`; adds the New York calendar day |
 | `FactWeatherHourly` | Gold table, one row per hour (UTC) |
 | `vw_weather_enriched` | Each weather hour with that day's taxi trips, PM2.5 and NO2 |
 
-Both run as part of `pl_master`. After syncing, open `df_weather` once and confirm the anonymous
-web connection, as for the other dataflows.
+All of them run as part of `pl_master`. The API is called from a notebook because requests to
+Open-Meteo from a Dataflow Gen2 fail in the Fabric service; the dataflow reads only from the
+lakehouse and needs no web connection.
 
 Taxi data is published about two months late, so `trips_day` is empty for recent hours and is
 filled in on a later run.

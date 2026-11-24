@@ -66,6 +66,16 @@ One row per sensor of each reference monitoring station inside the New York City
 | `parameter_name` | string | Pollutant |
 | `units` | string | Unit of the values |
 
+### `weather_raw_json` — `nb_weather_raw`
+
+One row per Open-Meteo API response.
+
+| Column | Type | Meaning |
+|---|---|---|
+| `year` | int | Calendar year the response covers |
+| `payload` | string | The JSON response body, unchanged |
+| `fetched_at` | timestamp | When the call was made (UTC) |
+
 ### `weather_hourly_raw` — `df_weather`
 
 | Column | Type | Meaning |

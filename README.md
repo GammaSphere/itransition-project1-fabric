@@ -19,7 +19,7 @@ checks on request.
 
 | Folder | Content |
 |---|---|
-| [`fabric/`](fabric) | Every Fabric item, in Git-integration format: 2 lakehouses, 1 warehouse, 2 pipelines, 4 dataflows, 8 notebooks |
+| [`fabric/`](fabric) | Every Fabric item, in Git-integration format: 2 lakehouses, 1 warehouse, 2 pipelines, 4 dataflows, 9 notebooks |
 | [`integrations/`](integrations) | Weather sync job, data-quality bot, sample data and tests (Python) |
 | [`grafana/`](grafana), [`db/`](db), `docker-compose.yml` | Grafana dashboard, TimescaleDB schema and the Docker stack |
 | [`docs/`](docs) | Setup guide, architecture, data dictionary, lineage, governance, integrations |

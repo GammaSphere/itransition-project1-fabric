@@ -45,6 +45,7 @@ at monitoring stations, not taxi zones, so it relates to zones at borough level.
 | Taxi files are copied by a pipeline; APIs are loaded by Dataflows Gen2 | Each tool is used for what it does best: bulk file copy versus shaping API responses |
 | A notebook lists which taxi months to copy | TLC publishes about two months late; asking the source which files exist avoids failed copies and re-downloading |
 | A notebook calls OpenAQ and the dataflow shapes the JSON | OpenAQ needs a secret key. A dataflow would store the key in its definition, which is committed to Git; the notebook reads it from a OneLake file instead |
+| A notebook calls Open-Meteo and the dataflow shapes the JSON | Requests to Open-Meteo from a Dataflow Gen2 fail in the Fabric service, while the same request from a notebook succeeds |
 | Notebooks find lakehouses by name at run time | No workspace or lakehouse ID is hard-coded, so notebooks work in any workspace |
 | Gold tables are defined in T-SQL and loaded from a notebook | Warehouse Git integration does not support procedures that read from a lakehouse; the Spark connector for Fabric Warehouse does the load |
 | Gold is fully reloaded on every run | At daily grain the tables are small; a full reload cannot drift or duplicate |

@@ -58,6 +58,41 @@
         ]
       },
       {
+        "type": "TridentNotebook",
+        "typeProperties": {
+          "notebookId": "21bcfb21-2eee-4e1b-9e9b-e76d2f23e891",
+          "workspaceId": "00000000-0000-0000-0000-000000000000",
+          "parameters": {
+            "start_month": {
+              "value": {
+                "value": "@pipeline().parameters.start_month",
+                "type": "Expression"
+              },
+              "type": "string"
+            }
+          }
+        },
+        "externalReferences": {
+          "connection": "e558edd9-2138-4519-aebf-83082a2e2ee4"
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Land weather raw",
+        "dependsOn": [
+          {
+            "activity": "Land OpenAQ raw",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      },
+      {
         "type": "RefreshDataflow",
         "typeProperties": {
           "dataflowId": "7c273b9c-6093-400f-9583-4044ef8c6ac3",
@@ -76,7 +111,7 @@
         "name": "Refresh df_openaq",
         "dependsOn": [
           {
-            "activity": "Land OpenAQ raw",
+            "activity": "Land weather raw",
             "dependencyConditions": [
               "Succeeded"
             ]
@@ -102,7 +137,7 @@
         "name": "Refresh df_ecb_fx",
         "dependsOn": [
           {
-            "activity": "Land OpenAQ raw",
+            "activity": "Land weather raw",
             "dependencyConditions": [
               "Succeeded"
             ]
@@ -128,7 +163,7 @@
         "name": "Refresh df_worldbank_gdp",
         "dependsOn": [
           {
-            "activity": "Land OpenAQ raw",
+            "activity": "Land weather raw",
             "dependencyConditions": [
               "Succeeded"
             ]
@@ -154,7 +189,7 @@
         "name": "Refresh df_weather",
         "dependsOn": [
           {
-            "activity": "Land OpenAQ raw",
+            "activity": "Land weather raw",
             "dependencyConditions": [
               "Succeeded"
             ]
