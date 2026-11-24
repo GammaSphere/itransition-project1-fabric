@@ -55,7 +55,13 @@ assert api_key, "Upload your OpenAQ key to lh_bronze/Files/config/openaq_api_key
 def call(path, **params):
     """GET with the key header; waits and retries when the rate limit (60/min) is hit."""
     for attempt in range(6):
-        r = requests.get(f"{API}{path}", params=params, headers={"X-API-Key": api_key}, timeout=60)
+        try:
+            r = requests.get(f"{API}{path}", params=params, headers={"X-API-Key": api_key}, timeout=60)
+        except requests.RequestException as error:  # timeout or dropped connection: wait and retry
+            last = type(error).__name__
+            time.sleep(10 * (attempt + 1))
+            continue
+        last = f"HTTP {r.status_code}"
         if r.status_code == 429:
             time.sleep(int(r.headers.get("x-ratelimit-reset", 30)) + 1)
         elif r.status_code >= 500:
@@ -64,7 +70,7 @@ def call(path, **params):
             r.raise_for_status()
             time.sleep(1.1)
             return r
-    raise RuntimeError(f"OpenAQ kept failing for {path}: HTTP {r.status_code}")
+    raise RuntimeError(f"OpenAQ kept failing for {path}: {last}")
 
 
 def pages(path, **params):
@@ -121,10 +127,10 @@ schema = T.StructType([
     T.StructField("payload", T.StringType()),
     T.StructField("fetched_at", T.TimestampType()),
 ])
+assert len(sensors) > 0, "No active NYC sensors found"  # checked before bronze is overwritten
 df = spark.createDataFrame(rows, schema)
 df.write.format("delta").mode("overwrite").option("overwriteSchema", "true").save(f"{bronze}/openaq_raw_json")
 
-assert len(sensors) > 0, "No active NYC sensors found"
 assert df.where("kind = 'days'").count() >= len(sensors)
 print(f"Landed {len(rows)} API responses")
 

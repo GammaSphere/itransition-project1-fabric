@@ -1,0 +1,29 @@
+{
+  "formatVersion": "202502",
+  "computeEngineSettings": {
+    "allowModernEvaluationEngine": true
+  },
+  "name": "df_weather",
+  "queryGroups": [],
+  "documentLocale": "en-US",
+  "queriesMetadata": {
+    "weather_hourly_raw": {
+      "queryId": "5927f96e-2b8c-42ae-b4d7-aa6fe69ce99a",
+      "queryName": "weather_hourly_raw",
+      "loadEnabled": false
+    },
+    "weather_hourly_raw_DataDestination": {
+      "queryId": "f2d62d40-d653-4e3b-9e04-3548c3f9176d",
+      "queryName": "weather_hourly_raw_DataDestination",
+      "isHidden": true,
+      "loadEnabled": false
+    }
+  },
+  "connections": [
+    {
+      "path": "Lakehouse",
+      "kind": "Lakehouse",
+      "connectionId": "{\"ClusterId\":\"cd363dad-e77c-43e7-97ab-31e80967d6a5\",\"DatasourceId\":\"f59a53ba-c103-42e5-bc1f-854d3d25e387\"}"
+    }
+  ]
+}

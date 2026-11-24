@@ -88,6 +88,16 @@ fact_air = air.select(
     F.col("measurements").cast("int").alias("measurements"),
 )
 
+weather = silver_table("weather_hourly")
+fact_weather = weather.select(
+    "ts",
+    date_key("local_date").alias("date_key"),
+    F.col("temperature_c").cast("decimal(6,2)").alias("temperature_c"),
+    F.col("precipitation_mm").cast("decimal(8,2)").alias("precipitation_mm"),
+    F.col("wind_speed_kmh").cast("decimal(6,2)").alias("wind_speed_kmh"),
+    F.col("relative_humidity_pct").cast("decimal(5,2)").alias("relative_humidity_pct"),
+)
+
 # METADATA ********************
 
 # META {
@@ -157,6 +167,7 @@ written = {
     "DimGDP": load(dim_gdp, "DimGDP"),
     "FactTaxiDaily": load(fact_taxi, "FactTaxiDaily"),
     "FactAirQualityDaily": load(fact_air, "FactAirQualityDaily"),
+    "FactWeatherHourly": load(fact_weather, "FactWeatherHourly"),
 }
 
 # METADATA ********************

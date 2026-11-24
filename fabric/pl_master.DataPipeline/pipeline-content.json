@@ -136,6 +136,32 @@
         ]
       },
       {
+        "type": "RefreshDataflow",
+        "typeProperties": {
+          "dataflowId": "69dab4e0-4560-4e3b-9734-d4259bf99800",
+          "workspaceId": "00000000-0000-0000-0000-000000000000",
+          "notifyOption": "NoNotification",
+          "dataflowType": "DataflowFabric",
+          "executeMashupQueriesOnly": true
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Refresh df_weather",
+        "dependsOn": [
+          {
+            "activity": "Land OpenAQ raw",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      },
+      {
         "type": "TridentNotebook",
         "typeProperties": {
           "notebookId": "b8c37c05-d2b0-4fda-8388-2ca4f54cb26e",
@@ -167,6 +193,12 @@
           },
           {
             "activity": "Refresh df_worldbank_gdp",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          },
+          {
+            "activity": "Refresh df_weather",
             "dependencyConditions": [
               "Succeeded"
             ]
@@ -228,6 +260,32 @@
       {
         "type": "TridentNotebook",
         "typeProperties": {
+          "notebookId": "1e3e5006-5864-42b1-82dc-6a188de04daa",
+          "workspaceId": "00000000-0000-0000-0000-000000000000"
+        },
+        "externalReferences": {
+          "connection": "e558edd9-2138-4519-aebf-83082a2e2ee4"
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Silver weather",
+        "dependsOn": [
+          {
+            "activity": "Silver economy",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "TridentNotebook",
+        "typeProperties": {
           "notebookId": "e366cca1-546e-4f46-8bbd-cc7c823a4078",
           "workspaceId": "00000000-0000-0000-0000-000000000000"
         },
@@ -244,7 +302,7 @@
         "name": "Gold load",
         "dependsOn": [
           {
-            "activity": "Silver economy",
+            "activity": "Silver weather",
             "dependencyConditions": [
               "Succeeded"
             ]

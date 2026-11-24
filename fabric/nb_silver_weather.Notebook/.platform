@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Notebook",
+    "displayName": "nb_silver_weather",
+    "description": "Bronze to silver: hourly weather for New York City"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "1e3e5006-5864-42b1-82dc-6a188de04daa"
+  }
+}
