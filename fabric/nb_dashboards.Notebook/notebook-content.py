@@ -254,10 +254,17 @@ print(
 )
 if len(trend) >= 2:
     change = (trend.iloc[-1] / trend.iloc[0] - 1) * 100
+    pm25_change = change.get("PM2.5", float("nan"))
+    if pd.isna(pm25_change):
+        verdict = "No PM2.5 readings cover these years, so the effect on air quality cannot be judged."
+    elif pm25_change > 1:  # within 1% counts as flat
+        verdict = "PM2.5 rose alongside mobility and GDP, so the data does not rule out a cost to air quality."
+    else:
+        verdict = "PM2.5 was flat or fell while mobility and GDP grew, so growth has not come at the expense of air quality."
     print(
         f"From {trend.index[0]} to {trend.index[-1]}: "
         + ", ".join(f"{name} {value:+.1f}%" for name, value in change.dropna().items())
-        + ". Growth in mobility and GDP alongside falling or flat PM2.5 would mean growth has not come at the expense of air quality."
+        + f". {verdict} This compares {len(trend)} full years, which shows a direction, not a cause."
     )
 else:
     print("Fewer than two full years of taxi data are loaded, so the multi-year trend is not shown. Lower start_month to add history.")
